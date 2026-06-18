@@ -3,17 +3,31 @@
 - hosts: all
   become: true
   tasks:
-
-  - name: update repository index
+  
+  - name: update repository index with apt
     apt:
       update_cache: yes
+    when: ansible_distribution == "Ubuntu"
   
-  - name: install apache2 package
+  - name: install apache2 and php packages with apt
     apt:
-      name: apache2
+      name: 
+        - apache2
+        - libapache2-mod-php
+        - git
       state: absent
-
-  - name: add php support for apache
-    apt:
-      name: libapache2-mod-php
+    when: ansible_distribution == "Ubuntu"
+    
+  - name: update repository index with dnf
+    dnf:
+      update_cache: yes
+    when: ansible_distribution == "Fedora"
+  
+  - name: remove php and httpd packages with dnf
+    dnf:
+      name: 
+        - httpd
+        - php
+        - git
       state: absent
+    when: ansible_distribution == "Fedora" 
