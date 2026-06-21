@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+  
+  - name: install updates (Fedora)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "Fedora"
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create sub-admin user
+    tags: always
+    user:
+      name: sub-admin
+      group: root
+
+  - name: add ssh key for sub-admin
+    tags: always
+    authorized_key:
+      user: sub-admin
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJmm23k4PekoHB/YvX0PE15C577LPqPStsrGqhDvEU ansible_key"
+
+  - name: add sudoers file for sub-admin
+    tags: always
+    copy:
+      src: sudoers_sub-admin
+      dest: /etc/sudoers.d/sub-admin
+      owner: root
+      group: root
+      mode: 0440
