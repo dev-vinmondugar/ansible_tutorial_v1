@@ -16,7 +16,24 @@
     apt:
       upgrade: dist
       update_cache: yes
-    when: ansible_distribution == "Ubuntu"  
+    when: ansible_distribution == "Ubuntu" 
+
+
+- hosts: workstations
+  become: true
+  tasks:
+
+  - name: install unzip
+    package:
+      name: unzip
+  - name: install terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/1.15.6/terraform_1.15.6_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
 
 
 - hosts: web_servers
@@ -42,6 +59,15 @@
         - git
       state: latest
     when: ansible_distribution == "Fedora"
+
+  - name: copy html file for site
+    tags: apache,apache2,httpd
+    copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
 
 
 - hosts: db_servers
