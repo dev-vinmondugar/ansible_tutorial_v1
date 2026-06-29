@@ -1,0 +1,4 @@
+- name: add ssh key for sub_admin
+  authorized_key:
+    user: sub-admin
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJmm23k4PekoHB/YvX0PE15C577LPqPStsrGqhDvEU ansible_key"
